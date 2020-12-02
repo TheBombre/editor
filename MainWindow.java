@@ -22,6 +22,9 @@ public class MainWindow extends JFrame {
     JMenuItem redoOption;
     JMenuItem undoOption;
 
+
+    JTextArea textArea;
+
     public static void main(String[] args) {
         MainWindow window = new MainWindow();
     }
@@ -32,37 +35,43 @@ public class MainWindow extends JFrame {
         super("Basic Text Editor");
         setSize(WIDTH, HEIGHT);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
 
         menuBar = new JMenuBar();
 
         // Initialise main menus
         editMenu = new JMenu("Edit");
-	fileMenu = new JMenu("File");
+        fileMenu = new JMenu("File");
 
-	// Initialise file menu options
-	newFileOption = new JMenuItem("New file");
-	openFileOption = new JMenuItem("Open file");
-	saveFileOption = new JMenuItem("Save file");
+        // Initialise file menu options
+        newFileOption = new JMenuItem("New file");
+        openFileOption = new JMenuItem("Open file");
+        saveFileOption = new JMenuItem("Save file");
 
-	// Initialise edit menu options
-	pasteOption = new JMenuItem("Paste");
-	redoOption = new JMenuItem("Redo");
-	undoOption = new JMenuItem("Undo");
+        // Initialise edit menu options
+        pasteOption = new JMenuItem("Paste");
+        redoOption = new JMenuItem("Redo");
+        undoOption = new JMenuItem("Undo");
 
-	// Append file menu options to file menu
-	fileMenu.add(newFileOption);
-	fileMenu.add(openFileOption);
-	fileMenu.add(saveFileOption);
+        // Append file menu options to file menu
+        fileMenu.add(newFileOption);
+        fileMenu.add(openFileOption);
+        fileMenu.add(saveFileOption);
 
-	// Append edit menu options to edit menu
-	editMenu.add(pasteOption);
-	editMenu.add(redoOption);
-	editMenu.add(undoOption);
+        // Append edit menu options to edit menu
+        editMenu.add(pasteOption);
+        editMenu.add(redoOption);
+        editMenu.add(undoOption);
 
-	menuBar.add(fileMenu);
-	menuBar.add(editMenu);
+        menuBar.add(fileMenu);
+        menuBar.add(editMenu);
+
+        textArea = new JTextArea();
+        textArea.setLineWrap(true);
+        textArea.setMargin(new Insets(0,5,0,5));
 
         setJMenuBar(menuBar);
+        add(textArea);
         setVisible(true);
     }
 
