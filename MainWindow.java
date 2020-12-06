@@ -1,11 +1,10 @@
 import java.awt.*;
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.event.*;
 
 public class MainWindow extends JFrame {
 
-    //Bar
+    // Bar
     JMenuBar menuBar;
 
     // Main menus
@@ -53,6 +52,9 @@ public class MainWindow extends JFrame {
         redoOption = new JMenuItem("Redo");
         undoOption = new JMenuItem("Undo");
 
+        // Action Listeners
+        newFileOption.addActionListener(new NewFileListener());
+
         // Append file menu options to file menu
         fileMenu.add(newFileOption);
         fileMenu.add(openFileOption);
@@ -75,9 +77,9 @@ public class MainWindow extends JFrame {
         setVisible(true);
     }
 
-    private class MenuItemListener implements ActionListener {
+    private class NewFileListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
-            System.out.println("This has been clicked");
+            MainWindow newFile = new MainWindow();
         }
     }
 }
