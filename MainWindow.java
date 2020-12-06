@@ -36,37 +36,11 @@ public class MainWindow extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
 
-        menuBar = new JMenuBar();
-
-        // Initialise main menus
-        editMenu = new JMenu("Edit");
-        fileMenu = new JMenu("File");
-
-        // Initialise file menu options
-        newFileOption = new JMenuItem("New file");
-        openFileOption = new JMenuItem("Open file");
-        saveFileOption = new JMenuItem("Save file");
-
-        // Initialise edit menu options
-        pasteOption = new JMenuItem("Paste");
-        redoOption = new JMenuItem("Redo");
-        undoOption = new JMenuItem("Undo");
+        initialiseObjects();
 
         // Action Listeners
-        newFileOption.addActionListener(new NewFileListener());
-
-        // Append file menu options to file menu
-        fileMenu.add(newFileOption);
-        fileMenu.add(openFileOption);
-        fileMenu.add(saveFileOption);
-
-        // Append edit menu options to edit menu
-        editMenu.add(pasteOption);
-        editMenu.add(redoOption);
-        editMenu.add(undoOption);
-
-        menuBar.add(fileMenu);
-        menuBar.add(editMenu);
+        addEventListeners();
+        addOptionsToMenu();
 
         textArea = new JTextArea();
         textArea.setLineWrap(true);
@@ -75,6 +49,47 @@ public class MainWindow extends JFrame {
         setJMenuBar(menuBar);
         add(textArea);
         setVisible(true);
+    }
+
+    private void initialiseObjects() {
+
+        menuBar = new JMenuBar();
+
+        //  main menus
+        editMenu = new JMenu("Edit");
+        fileMenu = new JMenu("File");
+
+        //  file menu options
+        newFileOption = new JMenuItem("New file");
+        openFileOption = new JMenuItem("Open file");
+        saveFileOption = new JMenuItem("Save file");
+
+        //  edit menu options
+        pasteOption = new JMenuItem("Paste");
+        redoOption = new JMenuItem("Redo");
+        undoOption = new JMenuItem("Undo");
+
+    }
+
+    private void addEventListeners() {
+        newFileOption.addActionListener(new NewFileListener());
+    }
+
+    private void addOptionsToMenu() {
+
+        // file menu options to file menu
+        fileMenu.add(newFileOption);
+        fileMenu.add(openFileOption);
+        fileMenu.add(saveFileOption);
+
+        // edit menu options to edit menu
+        editMenu.add(pasteOption);
+        editMenu.add(redoOption);
+        editMenu.add(undoOption);
+
+        menuBar.add(fileMenu);
+        menuBar.add(editMenu);
+
     }
 
     private class NewFileListener implements ActionListener {
