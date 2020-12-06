@@ -33,7 +33,7 @@ public class MainWindow extends JFrame {
     public MainWindow() {
         super("Basic Text Editor");
         setSize(WIDTH, HEIGHT);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLayout(new BorderLayout());
 
         initialiseObjects();
@@ -42,12 +42,10 @@ public class MainWindow extends JFrame {
         addEventListeners();
         addOptionsToMenu();
 
-        textArea = new JTextArea();
-        textArea.setLineWrap(true);
-        textArea.setMargin(new Insets(0,5,0,5));
-
+        setupTextArea();
         setJMenuBar(menuBar);
         add(textArea);
+        addWindowListener(new WindowListener());
         setVisible(true);
     }
 
@@ -68,6 +66,13 @@ public class MainWindow extends JFrame {
         pasteOption = new JMenuItem("Paste");
         redoOption = new JMenuItem("Redo");
         undoOption = new JMenuItem("Undo");
+
+    }
+
+    private void setupTextArea() {
+        textArea = new JTextArea();
+        textArea.setLineWrap(true);
+        textArea.setMargin(new Insets(0,5,0,5));
 
     }
 
@@ -95,6 +100,12 @@ public class MainWindow extends JFrame {
     private class NewFileListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             MainWindow newFile = new MainWindow();
+        }
+    }
+
+    private class WindowListener extends WindowAdapter {
+        public void windowClosing(WindowEvent e) {
+            dispose();
         }
     }
 }
