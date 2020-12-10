@@ -1,6 +1,7 @@
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
+import java.io.*;
 
 public class MainWindow extends JFrame {
 
@@ -23,6 +24,7 @@ public class MainWindow extends JFrame {
 
 
     JTextArea textArea;
+    File currentFile;
 
     public static void main(String[] args) {
         MainWindow window = new MainWindow();
@@ -41,6 +43,7 @@ public class MainWindow extends JFrame {
         // Action Listeners
         addEventListeners();
         addOptionsToMenu();
+
 
         setupTextArea();
         setJMenuBar(menuBar);
@@ -67,6 +70,7 @@ public class MainWindow extends JFrame {
         redoOption = new JMenuItem("Redo");
         undoOption = new JMenuItem("Undo");
 
+        currentFile = null;
     }
 
     private void setupTextArea() {
@@ -78,6 +82,7 @@ public class MainWindow extends JFrame {
 
     private void addEventListeners() {
         newFileOption.addActionListener(new NewFileListener());
+        openFileOption.addActionListener(new OpenFileListener());
     }
 
     private void addOptionsToMenu() {
@@ -100,6 +105,17 @@ public class MainWindow extends JFrame {
     private class NewFileListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             MainWindow newFile = new MainWindow();
+        }
+    }
+
+
+    private class OpenFileListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            JFileChooser chooser = new JFileChooser();
+            int returnVal = chooser.showOpenDialog(null);
+            if(returnVal == JFileChooser.APPROVE_OPTION) {
+                currentFile = chooser.getSelectedFile();
+            }
         }
     }
 
