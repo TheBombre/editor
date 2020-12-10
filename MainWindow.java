@@ -2,6 +2,9 @@ import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.Arrays;
+import java.util.List;
+import java.nio.file.*;
 
 public class MainWindow extends JFrame {
 
@@ -24,7 +27,9 @@ public class MainWindow extends JFrame {
 
 
     JTextArea textArea;
+    JScrollPane scrollPane;
     File currentFile;
+    List<String> fileContent;
 
     public static void main(String[] args) {
         MainWindow window = new MainWindow();
@@ -47,7 +52,7 @@ public class MainWindow extends JFrame {
 
         setupTextArea();
         setJMenuBar(menuBar);
-        add(textArea);
+        add(scrollPane);
         addWindowListener(new WindowListener());
         setVisible(true);
     }
@@ -78,6 +83,7 @@ public class MainWindow extends JFrame {
         textArea.setLineWrap(true);
         textArea.setMargin(new Insets(0,5,0,5));
 
+        scrollPane = new JScrollPane(textArea);
     }
 
     private void addEventListeners() {
@@ -102,6 +108,28 @@ public class MainWindow extends JFrame {
 
     }
 
+    private void readFile() {
+        Path path = Paths.get(currentFile.getAbsolutePath());
+        try {
+            if(fileContent == null)
+                fileContent = Files.readAllLines(path);
+            else {
+                fileContent.clear();
+                fileContent = Files.readAllLines(path);
+            }
+        } catch(IOException e) {
+            System.out.println("An error has occurred with reading the data.");
+            System.out.println(e);
+        }
+
+        textArea.setText(null);
+        for(String line: fileContent.toArray(new String[fileContent.size()])) {
+            System.out.println(line);
+            textArea.append(line + "\n");
+        }
+
+    }
+
     private class NewFileListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             MainWindow newFile = new MainWindow();
@@ -113,8 +141,10 @@ public class MainWindow extends JFrame {
         public void actionPerformed(ActionEvent e) {
             JFileChooser chooser = new JFileChooser();
             int returnVal = chooser.showOpenDialog(null);
+
             if(returnVal == JFileChooser.APPROVE_OPTION) {
                 currentFile = chooser.getSelectedFile();
+                MainWindow.this.readFile();
             }
         }
     }
