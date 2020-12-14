@@ -1,8 +1,9 @@
+package edit;
+
 import java.awt.*;
 import javax.swing.*;
 import java.awt.event.*;
 import java.io.*;
-import java.util.Arrays;
 import java.util.List;
 import java.nio.file.*;
 
@@ -28,8 +29,8 @@ public class MainWindow extends JFrame {
 
     JTextArea textArea;
     JScrollPane scrollPane;
+    FileOperations fileOp;
     File currentFile;
-    List<String> fileContent;
 
     public static void main(String[] args) {
         MainWindow window = new MainWindow();
@@ -37,6 +38,7 @@ public class MainWindow extends JFrame {
 
     private final int HEIGHT = 500;
     private final int WIDTH = 700;
+
     public MainWindow() {
         super("Basic Text Editor");
         setSize(WIDTH, HEIGHT);
@@ -81,6 +83,7 @@ public class MainWindow extends JFrame {
     private void setupTextArea() {
         textArea = new JTextArea();
         textArea.setLineWrap(true);
+        textArea.setWrapStyleWord(true);
         textArea.setMargin(new Insets(0,5,0,5));
 
         scrollPane = new JScrollPane(textArea);
@@ -109,25 +112,37 @@ public class MainWindow extends JFrame {
     }
 
     private void readFile() {
-        Path path = Paths.get(currentFile.getAbsolutePath());
+        Path path = currentFile.toPath();
+
+        if(currentFile == null) {
+            System.out.println("File has not been instantiated!");
+            return;
+        }
+
+        if (!Files.isReadable(path)) {
+            System.out.println("File is not readable!");
+            //TODO: Add frame to show this option to user
+            return;
+        }
+
         try {
-            if(fileContent == null)
-                fileContent = Files.readAllLines(path);
-            else {
-                fileContent.clear();
-                fileContent = Files.readAllLines(path);
-            }
+                BufferedReader bufferedReader = new BufferedReader(new FileReader(currentFile));
+                textArea.setText("");
+                System.out.println("Call before alert call");
+                Alert alert = new Alert("The changes made to the current file will not be saved if you continue. Otherwise, cancel.");
+                //TODO: Window to confirm that their changes will be deleted if not saved
+
+                String line = null;
+                while((line = bufferedReader.readLine()) != null)
+                {
+                    textArea.append(line + "\n");
+                }
+
+                bufferedReader.close();
         } catch(IOException e) {
             System.out.println("An error has occurred with reading the data.");
             System.out.println(e);
-        }
-
-        textArea.setText(null);
-        for(String line: fileContent.toArray(new String[fileContent.size()])) {
-            System.out.println(line);
-            textArea.append(line + "\n");
-        }
-
+        } 
     }
 
     private class NewFileListener implements ActionListener {
@@ -143,6 +158,8 @@ public class MainWindow extends JFrame {
             int returnVal = chooser.showOpenDialog(null);
 
             if(returnVal == JFileChooser.APPROVE_OPTION) {
+                System.out.println("User request received");
+                fileOp = new FileOperations(chooser.getSelectedFile());
                 currentFile = chooser.getSelectedFile();
                 MainWindow.this.readFile();
             }
@@ -151,6 +168,7 @@ public class MainWindow extends JFrame {
 
     private class WindowListener extends WindowAdapter {
         public void windowClosing(WindowEvent e) {
+            //TODO: Check is there are changes before closing window
             dispose();
         }
     }
