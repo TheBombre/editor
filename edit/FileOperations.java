@@ -1,50 +1,80 @@
 package edit;
 
 import java.io.*;
-import java.nio.file.*;
 import javax.swing.*;
 
 public class FileOperations {
-    File file;
+    private File file;
 
-    public FileOperations()
-    {
+    public FileOperations(File input) {
+        file = input.getAbsoluteFile();
+    }
 
+    public FileOperations() {
+        file = new File("untitled.txt");
+    }
+
+    public String getName() {
+        return file.getName();
+    }
+
+    public File getFile() {
+        return file.getAbsoluteFile();
     }
 
 
-    private void readFile(JTextArea textArea) {
-        if(file == null) {
-            System.out.println("File has not been instantiated!");
-            return;
-        }
-
-        Path path = file.toPath();
-
-        if (!Files.isReadable(path)) {
+    public void readToTextArea(JTextArea textArea, JFrame frame) {
+        if (!file.canRead()) {
             System.out.println("File is not readable!");
-            //TODO: Add frame to show this option to user
             return;
         }
 
         try {
             BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
             textArea.setText("");
-            System.out.println("Call before alert call");
-            Alert alert = new Alert("The changes made to the current file will not be saved if you continue. Otherwise, cancel.");
-            //TODO: Window to confirm that their changes will be deleted if not saved
 
             String line = null;
-            while((line = bufferedReader.readLine()) != null)
-            {
+            while((line = bufferedReader.readLine()) != null) {
                 textArea.append(line + "\n");
             }
 
             bufferedReader.close();
+            setWindowTitle(frame);
         } catch(IOException e) {
             System.out.println("An error has occurred with reading the data.");
             System.out.println(e);
         }
+    }
+
+    public void saveFromTextArea(JTextArea textArea, JFrame frame, File saveAs) {
+        file = saveAs.getAbsoluteFile();
+
+        try {
+            if(file.exists()) {
+                if(!file.delete()) {
+                    System.out.println("Failed to delete file before performing save!");
+                    return;
+                }
+            }
+
+            if(!file.createNewFile()) {
+                System.out.println("Failed to create new file!");
+                return;
+            }
+
+            FileWriter writer = new FileWriter(file);
+            writer.write(textArea.getText());
+            writer.close();
+            setWindowTitle(frame);
+
+
+        } catch (IOException error) {
+            System.out.println("Error on saving file: " + error);
+        }
+    }
+
+    private void setWindowTitle(JFrame frame) {
+        frame.setTitle(getName());
     }
 
 }

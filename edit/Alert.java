@@ -34,6 +34,7 @@ public class Alert extends JFrame {
 
         add(field, BorderLayout.CENTER);
         add(buttonPanel,BorderLayout.SOUTH);
+        addWindowListener(new WindowListener());
         setVisible(true);
         System.out.println("I am here");
 

@@ -30,7 +30,6 @@ public class MainWindow extends JFrame {
     JTextArea textArea;
     JScrollPane scrollPane;
     FileOperations fileOp;
-    File currentFile;
 
     public static void main(String[] args) {
         MainWindow window = new MainWindow();
@@ -40,7 +39,7 @@ public class MainWindow extends JFrame {
     private final int WIDTH = 700;
 
     public MainWindow() {
-        super("Basic Text Editor");
+        super();
         setSize(WIDTH, HEIGHT);
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLayout(new BorderLayout());
@@ -55,6 +54,7 @@ public class MainWindow extends JFrame {
         setupTextArea();
         setJMenuBar(menuBar);
         add(scrollPane);
+        setTitle(fileOp.getName());
         addWindowListener(new WindowListener());
         setVisible(true);
     }
@@ -76,8 +76,8 @@ public class MainWindow extends JFrame {
         pasteOption = new JMenuItem("Paste");
         redoOption = new JMenuItem("Redo");
         undoOption = new JMenuItem("Undo");
+        fileOp = new FileOperations();
 
-        currentFile = null;
     }
 
     private void setupTextArea() {
@@ -92,6 +92,7 @@ public class MainWindow extends JFrame {
     private void addEventListeners() {
         newFileOption.addActionListener(new NewFileListener());
         openFileOption.addActionListener(new OpenFileListener());
+        saveFileOption.addActionListener(new saveFileListener());
     }
 
     private void addOptionsToMenu() {
@@ -111,43 +112,21 @@ public class MainWindow extends JFrame {
 
     }
 
-    private void readFile() {
-        Path path = currentFile.toPath();
-
-        if(currentFile == null) {
-            System.out.println("File has not been instantiated!");
-            return;
-        }
-
-        if (!Files.isReadable(path)) {
-            System.out.println("File is not readable!");
-            //TODO: Add frame to show this option to user
-            return;
-        }
-
-        try {
-                BufferedReader bufferedReader = new BufferedReader(new FileReader(currentFile));
-                textArea.setText("");
-                System.out.println("Call before alert call");
-                Alert alert = new Alert("The changes made to the current file will not be saved if you continue. Otherwise, cancel.");
-                //TODO: Window to confirm that their changes will be deleted if not saved
-
-                String line = null;
-                while((line = bufferedReader.readLine()) != null)
-                {
-                    textArea.append(line + "\n");
-                }
-
-                bufferedReader.close();
-        } catch(IOException e) {
-            System.out.println("An error has occurred with reading the data.");
-            System.out.println(e);
-        } 
-    }
-
     private class NewFileListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {
             MainWindow newFile = new MainWindow();
+        }
+    }
+
+    private class saveFileListener implements ActionListener {
+        public void actionPerformed(ActionEvent e) {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setSelectedFile(fileOp.getFile());
+            int returnVal = chooser.showSaveDialog(null);
+
+            if(returnVal == JFileChooser.APPROVE_OPTION) {
+                fileOp.saveFromTextArea(textArea, MainWindow.this, chooser.getSelectedFile());
+            }
         }
     }
 
@@ -158,18 +137,10 @@ public class MainWindow extends JFrame {
             int returnVal = chooser.showOpenDialog(null);
 
             if(returnVal == JFileChooser.APPROVE_OPTION) {
-                System.out.println("User request received");
                 fileOp = new FileOperations(chooser.getSelectedFile());
-                currentFile = chooser.getSelectedFile();
-                MainWindow.this.readFile();
+                fileOp.readToTextArea(textArea, MainWindow.this);
             }
         }
     }
 
-    private class WindowListener extends WindowAdapter {
-        public void windowClosing(WindowEvent e) {
-            //TODO: Check is there are changes before closing window
-            dispose();
-        }
-    }
 }
